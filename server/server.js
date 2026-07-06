@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import morgan from 'morgan';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import connectDB from './config/db.js';
@@ -23,6 +24,7 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 const uploadsPath = path.join(rootDir, 'server', 'public');
 const clientDistPath = path.join(rootDir, 'client', 'dist');
+const hasClientBuild = fs.existsSync(path.join(clientDistPath, 'index.html'));
 
 const app = express();
 const allowedOrigins = [
@@ -60,14 +62,6 @@ app.use('/uploads', express.static(uploadsPath));
 
 app.get('/health', (req, res) => res.json({ status: 'ok', service: 'gavyadhenu-api' }));
 
-if (process.env.NODE_ENV === 'production') {
-  app.get('/', (req, res) => {
-    res.sendFile(path.join(clientDistPath, 'index.html'));
-  });
-} else {
-  app.get('/', (req, res) => res.json({ message: 'Gavyadhenu API is running' }));
-}
-
 // Middleware to return 503 when DB is not ready for API routes
 app.use((req, res, next) => {
   if (mongoose.connection.readyState !== 1 && req.path.startsWith('/api')) {
@@ -86,14 +80,16 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
 
-if (process.env.NODE_ENV === 'production') {
+if (hasClientBuild) {
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/health')) {
       return next();
     }
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
+} else {
+  app.get('/', (req, res) => res.json({ message: 'Gavyadhenu API is running' }));
 }
 
 // Global error handler
