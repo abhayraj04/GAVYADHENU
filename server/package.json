@@ -1,0 +1,30 @@
+{
+  "name": "gavyadhenu-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "seed": "node data/seed.js",
+    "pm2:start": "pm2 start ecosystem.config.js --env production",
+    "pm2:stop": "pm2 stop ecosystem.config.js || true",
+    "pm2:restart": "pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js --env production",
+    "pm2:save": "pm2 save",
+    "pm2:startup": "pm2 startup"
+  },
+  "dependencies": {
+    "bcryptjs": "latest",
+    "cors": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "jsonwebtoken": "latest",
+    "mongoose": "latest",
+    "morgan": "latest",
+    "nodemailer": "latest",
+    "razorpay": "latest",
+    "slugify": "latest"
+  },
+  "devDependencies": {
+    "nodemon": "latest"
+  }
+}
