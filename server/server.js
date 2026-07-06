@@ -58,7 +58,15 @@ app.use(morgan('dev'));
 // Serve uploaded/static files (product photos) from server/public at /uploads
 app.use('/uploads', express.static(uploadsPath));
 
-app.get('/', (req, res) => res.json({ message: 'Gavyadhenu API is running' }));
+app.get('/health', (req, res) => res.json({ status: 'ok', service: 'gavyadhenu-api' }));
+
+if (process.env.NODE_ENV === 'production') {
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => res.json({ message: 'Gavyadhenu API is running' }));
+}
 
 // Middleware to return 503 when DB is not ready for API routes
 app.use((req, res, next) => {
