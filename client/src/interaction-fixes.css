@@ -1,0 +1,17 @@
+/* Interaction safety layer: every customer journey overlay owns the top stacking context. */
+.commerce-overlay, .workspace-overlay, .product-modal-overlay { position: fixed !important; inset: 0 !important; display: flex !important; justify-content: flex-end !important; z-index: 2147481000 !important; pointer-events: auto !important; }
+.commerce-drawer, .workspace-drawer { position: relative !important; z-index: 1 !important; pointer-events: auto !important; }
+.product-modal-overlay { display: grid !important; place-items: center !important; }
+.ai-overlay { display: flex !important; justify-content: flex-end !important; pointer-events: auto !important; }
+.ai-drawer { position: relative !important; z-index: 1 !important; pointer-events: auto !important; }
+.ai-fab { cursor: pointer !important; touch-action: manipulation !important; }
+@media (max-width: 720px) {
+  .commerce-drawer, .workspace-drawer, .ai-drawer { width: 100% !important; max-width: 100vw !important; }
+  .commerce-overlay, .workspace-overlay, .ai-overlay { align-items: stretch !important; }
+}
+.product-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 9px; }
+.product-actions .product-add, .product-buy-now { min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 10px 7px; border-radius: 999px; font-size: 10px; font-weight: 800; }
+.product-actions .product-add { margin-top: 0; }
+.product-buy-now { border: 1px solid #365b3f; color: #f8faf0; background: #365b3f; }
+.product-buy-now:hover { background: #2d4d35; }
+@media (max-width: 520px) { .product-actions { grid-template-columns: 1fr; gap: 5px; } }

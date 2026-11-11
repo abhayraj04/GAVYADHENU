@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#FCF9F3"/>
+      <stop offset="70%" stop-color="#F5EFE6"/>
+      <stop offset="100%" stop-color="#ECE2D3"/>
+    </radialGradient>
+    <radialGradient id="podiumShadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(42,34,22,0.22)"/>
+      <stop offset="60%" stop-color="rgba(42,34,22,0.08)"/>
+      <stop offset="100%" stop-color="rgba(42,34,22,0)"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5B94F"/>
+      <stop offset="50%" stop-color="#C59328"/>
+      <stop offset="100%" stop-color="#9A6E14"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3D6B42"/>
+      <stop offset="100%" stop-color="#1E3821"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#2D2316" flood-opacity="0.18"/>
+    </filter>
+    <filter id="deepShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#1F1A13" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="600" fill="url(#bgGlow)"/>
+
+  <!-- Subtle organic background ring -->
+  <circle cx="300" cy="290" r="220" fill="none" stroke="#E9DFC9" stroke-width="1.5" stroke-dasharray="6,6"/>
+
+  <!-- Podium / Ground shadow -->
+  <ellipse cx="300" cy="510" rx="200" ry="28" fill="url(#podiumShadow)"/>
+
+  <!-- Main Illustration Group -->
+  <g filter="url(#softShadow)">
+    
+      <!-- Terracotta Pot Bowl -->
+      <path d="M190 320 C190 440 230 480 300 480 C370 480 410 440 410 320 Z" fill="#B2533E"/>
+      <ellipse cx="300" cy="320" rx="110" ry="25" fill="#CD6E58"/>
+
+      <!-- Wax inside -->
+      <ellipse cx="300" cy="322" rx="98" ry="20" fill="#FBF6EA"/>
+
+      <!-- Candle Wick & Flame -->
+      <line x1="300" y1="320" x2="300" y2="280" stroke="#3D2B1F" stroke-width="3"/>
+      
+      <!-- Flame -->
+      <path d="M300 240 C312 265 315 285 300 295 C285 285 288 265 300 240 Z" fill="#FFA500"/>
+      <path d="M300 255 C306 270 308 282 300 290 C292 282 294 270 300 255 Z" fill="#FFEAA7"/>
+
+      <!-- Pot details -->
+      <ellipse cx="300" cy="355" rx="85" ry="12" fill="none" stroke="#8A3423" stroke-width="2"/>
+
+      <!-- Mini Crest Tag on terracotta -->
+      <rect x="250" y="380" width="100" height="45" rx="6" fill="#FDF8EE" stroke="#CD6E58" stroke-width="1"/>
+      <text x="300" y="398" text-anchor="middle" font-family="'Plus Jakarta Sans', serif" font-size="9" font-weight="800" fill="#2E4A28">EARTHEN SOY</text>
+      <text x="300" y="412" text-anchor="middle" font-family="sans-serif" font-size="8" font-weight="700" fill="#B2533E">CEDAR &amp; VETIVER</text>
+    
+  </g>
+
+  <!-- Top Brand Stamp -->
+  <g transform="translate(300, 48)">
+    <rect x="-105" y="-16" width="210" height="30" rx="15" fill="#2E4A28" opacity="0.08"/>
+    <text text-anchor="middle" y="5" font-family="'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" font-size="11.5" font-weight="700" letter-spacing="3" fill="#2E4A28">GAVYADHENU FARMS</text>
+  </g>
+
+  <!-- Product badge -->
+  <g transform="translate(300, 552)">
+    <rect x="-95" y="-15" width="190" height="30" rx="15" fill="#FFFFFF" stroke="#E5B94F" stroke-width="1.2" filter="url(#softShadow)"/>
+    <circle cx="-75" cy="0" r="5" fill="#2E7D32"/>
+    <text text-anchor="middle" y="4" font-family="'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#2D2316">SOY WAX • PURE ESSENTIAL OILS</text>
+  </g>
+</svg>

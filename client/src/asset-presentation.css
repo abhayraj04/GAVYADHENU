@@ -1,0 +1,8 @@
+.brand-logo-image { width: 148px; height: 58px; object-fit: contain; object-position: center; mix-blend-mode: multiply; }
+.footer-logo-image { width: 152px; height: 72px; object-fit: contain; object-position: left center; mix-blend-mode: multiply; }
+.product-art.has-product-image { overflow: hidden; padding: 0; background: #eee8d9; }
+.product-art.has-product-image > img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; transition: transform .35s cubic-bezier(.23,1,.32,1); }
+.product-card:hover .product-art.has-product-image > img { transform: scale(1.045); }
+.product-art.has-product-image .product-badge { z-index: 2; top: 12px; left: 12px; }
+.product-art.has-product-image .product-wish, .product-art.has-product-image .product-plus { z-index: 3; }
+@media (max-width: 720px) { .brand-logo-image { width: 126px; height: 52px; } .footer-logo-image { width: 138px; } }

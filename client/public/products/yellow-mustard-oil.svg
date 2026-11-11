@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#FCF9F3"/>
+      <stop offset="70%" stop-color="#F5EFE6"/>
+      <stop offset="100%" stop-color="#ECE2D3"/>
+    </radialGradient>
+    <radialGradient id="podiumShadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(42,34,22,0.22)"/>
+      <stop offset="60%" stop-color="rgba(42,34,22,0.08)"/>
+      <stop offset="100%" stop-color="rgba(42,34,22,0)"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5B94F"/>
+      <stop offset="50%" stop-color="#C59328"/>
+      <stop offset="100%" stop-color="#9A6E14"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3D6B42"/>
+      <stop offset="100%" stop-color="#1E3821"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#2D2316" flood-opacity="0.18"/>
+    </filter>
+    <filter id="deepShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#1F1A13" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="600" fill="url(#bgGlow)"/>
+
+  <!-- Subtle organic background ring -->
+  <circle cx="300" cy="290" r="220" fill="none" stroke="#E9DFC9" stroke-width="1.5" stroke-dasharray="6,6"/>
+
+  <!-- Podium / Ground shadow -->
+  <ellipse cx="300" cy="510" rx="200" ry="28" fill="url(#podiumShadow)"/>
+
+  <!-- Main Illustration Group -->
+  <g filter="url(#softShadow)">
+    
+      <defs>
+        <linearGradient id="mustardOil" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#D49300"/>
+          <stop offset="40%" stop-color="#FFBF00"/>
+          <stop offset="70%" stop-color="#FDB813"/>
+          <stop offset="100%" stop-color="#B87A00"/>
+        </linearGradient>
+      </defs>
+      <!-- Sleek Oil Bottle -->
+      <path d="M260 170 L340 170 L350 240 L370 280 L370 480 C370 495 355 500 340 500 L260 500 C245 500 230 495 230 480 L230 280 L250 240 Z" fill="url(#mustardOil)"/>
+      
+      <!-- Highlights -->
+      <path d="M245 285 L255 285 L250 485 L240 485 Z" fill="#FFFFFF" opacity="0.35"/>
+      <path d="M355 285 L360 285 L355 485 L350 485 Z" fill="#FFFFFF" opacity="0.2"/>
+
+      <!-- Cap -->
+      <rect x="270" y="125" width="60" height="45" rx="5" fill="#3D2B1F"/>
+      <line x1="270" y1="145" x2="330" y2="145" stroke="#E5B94F" stroke-width="2"/>
+
+      <!-- Label -->
+      <rect x="245" y="300" width="110" height="160" rx="6" fill="#FFFDF7" stroke="#D49300" stroke-width="1.5"/>
+      <circle cx="300" cy="335" r="16" fill="#F7CA18"/>
+      <!-- Mustard flower -->
+      <circle cx="300" cy="330" r="4" fill="#D35400"/>
+      <circle cx="295" cy="335" r="4" fill="#D35400"/>
+      <circle cx="305" cy="335" r="4" fill="#D35400"/>
+      <circle cx="300" cy="340" r="4" fill="#D35400"/>
+
+      <text x="300" y="372" text-anchor="middle" font-family="'Plus Jakarta Sans', serif" font-size="10" font-weight="800" letter-spacing="1" fill="#2E4A28">COLD PRESSED</text>
+      <text x="300" y="388" text-anchor="middle" font-family="'Plus Jakarta Sans', serif" font-size="13" font-weight="900" fill="#8C532B">YELLOW</text>
+      <text x="300" y="403" text-anchor="middle" font-family="'Plus Jakarta Sans', serif" font-size="13" font-weight="900" fill="#8C532B">MUSTARD</text>
+      <text x="300" y="418" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#D49300">WOOD KOLHU OIL</text>
+      <line x1="265" y1="426" x2="335" y2="426" stroke="#D3AE56" stroke-width="1"/>
+      <text x="300" y="442" text-anchor="middle" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#555">Natural Pungency • 1L</text>
+    
+  </g>
+
+  <!-- Top Brand Stamp -->
+  <g transform="translate(300, 48)">
+    <rect x="-105" y="-16" width="210" height="30" rx="15" fill="#2E4A28" opacity="0.08"/>
+    <text text-anchor="middle" y="5" font-family="'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" font-size="11.5" font-weight="700" letter-spacing="3" fill="#2E4A28">GAVYADHENU FARMS</text>
+  </g>
+
+  <!-- Product badge -->
+  <g transform="translate(300, 552)">
+    <rect x="-95" y="-15" width="190" height="30" rx="15" fill="#FFFFFF" stroke="#E5B94F" stroke-width="1.2" filter="url(#softShadow)"/>
+    <circle cx="-75" cy="0" r="5" fill="#2E7D32"/>
+    <text text-anchor="middle" y="4" font-family="'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#2D2316">WOOD-PRESSED • UNFILTERED</text>
+  </g>
+</svg>

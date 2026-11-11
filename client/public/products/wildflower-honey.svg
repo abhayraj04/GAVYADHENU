@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#FCF9F3"/>
+      <stop offset="70%" stop-color="#F5EFE6"/>
+      <stop offset="100%" stop-color="#ECE2D3"/>
+    </radialGradient>
+    <radialGradient id="podiumShadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(42,34,22,0.22)"/>
+      <stop offset="60%" stop-color="rgba(42,34,22,0.08)"/>
+      <stop offset="100%" stop-color="rgba(42,34,22,0)"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5B94F"/>
+      <stop offset="50%" stop-color="#C59328"/>
+      <stop offset="100%" stop-color="#9A6E14"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3D6B42"/>
+      <stop offset="100%" stop-color="#1E3821"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#2D2316" flood-opacity="0.18"/>
+    </filter>
+    <filter id="deepShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#1F1A13" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="600" fill="url(#bgGlow)"/>
+
+  <!-- Subtle organic background ring -->
+  <circle cx="300" cy="290" r="220" fill="none" stroke="#E9DFC9" stroke-width="1.5" stroke-dasharray="6,6"/>
+
+  <!-- Podium / Ground shadow -->
+  <ellipse cx="300" cy="510" rx="200" ry="28" fill="url(#podiumShadow)"/>
+
+  <!-- Main Illustration Group -->
+  <g filter="url(#softShadow)">
+    
+      <defs>
+        <linearGradient id="honeyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#C67D0A"/>
+          <stop offset="40%" stop-color="#F2A900"/>
+          <stop offset="70%" stop-color="#E59400"/>
+          <stop offset="100%" stop-color="#9C5B00"/>
+        </linearGradient>
+      </defs>
+      <!-- Hexagonal Honey Jar -->
+      <path d="M225 240 L375 240 L400 330 L380 470 C380 485 365 490 350 490 L250 490 C235 490 220 485 220 470 L200 330 Z" fill="url(#honeyGrad)"/>
+
+      <!-- Reflection -->
+      <path d="M225 255 L240 255 L230 465 L220 465 Z" fill="#FFFFFF" opacity="0.3"/>
+
+      <!-- Wooden Jar Lid -->
+      <rect x="220" y="195" width="160" height="45" rx="10" fill="#6B4423"/>
+      <ellipse cx="300" cy="195" rx="80" ry="10" fill="#8C5A2B"/>
+
+      <!-- Dipper sticking out -->
+      <line x1="360" y1="140" x2="440" y2="280" stroke="#8C5A2B" stroke-width="8" stroke-linecap="round"/>
+      <ellipse cx="420" cy="245" rx="15" ry="20" fill="#8C5A2B" transform="rotate(30 420 245)"/>
+      <path d="M425 260 Q430 290 425 310" fill="none" stroke="#F2A900" stroke-width="4" stroke-linecap="round"/>
+
+      <!-- Label -->
+      <polygon points="250,290 350,290 370,350 350,430 250,430 230,350" fill="#FFFDF8" stroke="#D3AE56" stroke-width="1.5"/>
+      <circle cx="300" cy="330" r="16" fill="#FBEAA8"/>
+      <!-- Bee symbol -->
+      <ellipse cx="300" cy="330" rx="9" ry="6" fill="#3D2B1F"/>
+      <line x1="295" y1="326" x2="295" y2="334" stroke="#F2A900" stroke-width="2"/>
+      <line x1="302" y1="326" x2="302" y2="334" stroke="#F2A900" stroke-width="2"/>
+
+      <text x="300" y="362" text-anchor="middle" font-family="'Plus Jakarta Sans', serif" font-size="10" font-weight="800" fill="#2E4A28">RAW &amp; WILD</text>
+      <text x="300" y="378" text-anchor="middle" font-family="'Plus Jakarta Sans', serif" font-size="13" font-weight="900" fill="#9C5B00">FOREST HONEY</text>
+      <text x="300" y="394" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" fill="#555">MULTI-FLORA NECTAR</text>
+      <text x="300" y="408" text-anchor="middle" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#777">Pure Unfiltered • 250g</text>
+    
+  </g>
+
+  <!-- Top Brand Stamp -->
+  <g transform="translate(300, 48)">
+    <rect x="-105" y="-16" width="210" height="30" rx="15" fill="#2E4A28" opacity="0.08"/>
+    <text text-anchor="middle" y="5" font-family="'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" font-size="11.5" font-weight="700" letter-spacing="3" fill="#2E4A28">GAVYADHENU FARMS</text>
+  </g>
+
+  <!-- Product badge -->
+  <g transform="translate(300, 552)">
+    <rect x="-95" y="-15" width="190" height="30" rx="15" fill="#FFFFFF" stroke="#E5B94F" stroke-width="1.2" filter="url(#softShadow)"/>
+    <circle cx="-75" cy="0" r="5" fill="#2E7D32"/>
+    <text text-anchor="middle" y="4" font-family="'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#2D2316">RAW • UNPASTEURIZED • UNFILTERED</text>
+  </g>
+</svg>
