@@ -491,6 +491,12 @@ export default function Storefront() {
             </button>
             <button
               className="anv-nav-item"
+              onClick={() => document.getElementById("our-vision")?.scrollIntoView({ behavior: "smooth" })}
+            >
+              Our Vision
+            </button>
+            <button
+              className="anv-nav-item"
               onClick={() => document.getElementById("lab-reports")?.scrollIntoView({ behavior: "smooth" })}
             >
               Lab Reports
@@ -1723,6 +1729,16 @@ export default function Storefront() {
             </button>
 
             <div className="anv-drawer-section-label" style={{ marginTop: 18 }}>TRANSPARENCY & ASSURANCE</div>
+            <button
+              className="anv-drawer-link"
+              onClick={() => {
+                setMobileNavOpen(false);
+                document.getElementById("our-vision")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              <span>🌿 Our Sacred Vision</span>
+              <ChevronRight size={15} />
+            </button>
             <button
               className="anv-drawer-link"
               onClick={() => {
