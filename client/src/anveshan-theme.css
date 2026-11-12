@@ -3416,3 +3416,171 @@
     font-size: 17px;
   }
 }
+
+/* Price Filter & Results Summary Strip */
+.anv-results-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  background: #fbf8f1;
+  border: 1px solid #ece2cf;
+  border-radius: 14px;
+}
+
+.anv-price-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.anv-price-pill {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #dfd4bf;
+  background: #ffffff;
+  color: #425648;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.anv-price-pill:hover {
+  border-color: var(--anv-green-deep);
+}
+
+.anv-price-pill.active {
+  background: var(--anv-green-deep);
+  color: #ffffff;
+  border-color: var(--anv-green-deep);
+}
+
+.anv-results-count {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #4f6354;
+}
+
+.anv-reset-inline {
+  background: none;
+  border: 0;
+  color: #b46d1e;
+  font-weight: 700;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Product Quick View Modal */
+.anv-quickview-box {
+  position: relative;
+  max-width: 820px;
+  width: 94%;
+  padding: 28px;
+}
+
+.anv-quickview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.anv-quickview-main-img {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #eadec9;
+  background: #faf6ed;
+  aspect-ratio: 1 / 1;
+}
+
+.anv-quickview-main-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.anv-quickview-thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.anv-quickview-thumbs button {
+  width: 58px;
+  height: 58px;
+  padding: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: #faf6ed;
+}
+
+.anv-quickview-thumbs button.active {
+  border-color: var(--anv-green-deep);
+}
+
+.anv-quickview-thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.anv-quickview-info h3 {
+  font-family: var(--anv-serif);
+  font-size: 26px;
+  color: var(--anv-green-deep);
+  margin: 6px 0 8px;
+  line-height: 1.2;
+}
+
+.anv-quickview-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4b5d50;
+  margin: 0 0 18px;
+}
+
+/* Floating Back-to-Top Button */
+.anv-back-to-top {
+  position: fixed;
+  right: 24px;
+  bottom: 84px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #e2ca9e;
+  background: #193826;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(25, 56, 38, 0.25);
+  z-index: 45;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.anv-back-to-top:hover {
+  transform: translateY(-3px);
+  background: #244b34;
+}
+
+@media (max-width: 720px) {
+  .anv-quickview-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .anv-back-to-top {
+    right: 16px;
+    bottom: 78px;
+  }
+}

@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import {
   ArrowLeftRight,
   ArrowRight,
+  ArrowUp,
   Award,
   Check,
   ChevronDown,
@@ -12,6 +13,7 @@ import {
   Download,
   Droplets,
   ExternalLink,
+  Eye,
   Flame,
   Heart,
   HelpCircle,
@@ -242,6 +244,16 @@ export default function Storefront() {
   const [promoCode, setPromoCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [quickViewRow, setQuickViewRow] = useState<CatalogRow | null>(null);
+  const [quickViewPhotoIndex, setQuickViewPhotoIndex] = useState(0);
+  const [quickViewVariantIndex, setQuickViewVariantIndex] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowBackToTop(window.scrollY > 450);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const sessionId = useMemo(() => getSessionId(), []);
 
@@ -816,6 +828,39 @@ export default function Storefront() {
             </div>
           </div>
 
+          {/* Price Filter & Results Summary Strip */}
+          <div className="anv-results-meta">
+            <div className="anv-price-pills">
+              {priceFilters.map((pf, idx) => (
+                <button
+                  key={pf.label}
+                  className={`anv-price-pill ${priceIndex === idx ? "active" : ""}`}
+                  onClick={() => setPriceIndex(idx)}
+                >
+                  {pf.label}
+                </button>
+              ))}
+            </div>
+            <div className="anv-results-count">
+              <span>
+                Showing <b>{products.length}</b> pure harvest{products.length === 1 ? "" : "s"}
+                {query ? ` for “${query}”` : ""}
+              </span>
+              {(category !== "All harvests" || query || priceIndex !== 0) && (
+                <button
+                  className="anv-reset-inline"
+                  onClick={() => {
+                    setCategory("All harvests");
+                    setQuery("");
+                    setPriceIndex(0);
+                  }}
+                >
+                  Reset filters
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Products Grid */}
           {catalog.isLoading ? (
             <div className="store-empty">
@@ -848,6 +893,11 @@ export default function Storefront() {
                   row={row}
                   onAdd={() => handleAdd(row.product)}
                   onToggleCompare={() => handleToggleCompare(row.product, row.seller?.storeName)}
+                  onQuickView={() => {
+                    setQuickViewRow(row);
+                    setQuickViewPhotoIndex(0);
+                    setQuickViewVariantIndex(0);
+                  }}
                   isComparing={compareList.some((item) => item.id === row.product.id)}
                   onClick={() => handleProductClick(row.product.id)}
                 />
@@ -1442,6 +1492,148 @@ export default function Storefront() {
         </div>
       </footer>
 
+      {/* Product Quick View Modal */}
+      {quickViewRow && (() => {
+        const qProduct = quickViewRow.product;
+        const qPhotos = getProductPhotos(qProduct.slug, qProduct.imageUrl);
+        const qIsLiquid = qProduct.slug.includes("ghee") || qProduct.slug.includes("oil") || qProduct.slug.includes("honey");
+        const qVariants = qIsLiquid
+          ? [
+              { label: "500 ml", multiplier: 1 },
+              { label: "1 Litre", multiplier: 1.85 },
+              { label: "5 Litres", multiplier: 8.5 },
+            ]
+          : [
+              { label: "250 g", multiplier: 1 },
+              { label: "500 g", multiplier: 1.85 },
+              { label: "1 kg", multiplier: 3.5 },
+            ];
+        const qBasePrice = Number(qProduct.price);
+        const qBaseMrp = qProduct.mrp ? Number(qProduct.mrp) : qBasePrice * 1.22;
+        const qPrice = Math.round(qBasePrice * qVariants[quickViewVariantIndex].multiplier);
+        const qMrp = Math.round(qBaseMrp * qVariants[quickViewVariantIndex].multiplier);
+        const qSaving = Math.max(0, Math.round((1 - qPrice / qMrp) * 100));
+
+        return (
+          <div className="anv-modal-overlay" onClick={() => setQuickViewRow(null)}>
+            <div className="anv-modal-box anv-quickview-box" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={() => setQuickViewRow(null)}
+                aria-label="Close quick view"
+                style={{
+                  position: "absolute",
+                  top: 16,
+                  right: 16,
+                  border: 0,
+                  background: "#f5eee2",
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                  display: "grid",
+                  placeItems: "center",
+                  zIndex: 2,
+                }}
+              >
+                <X size={16} />
+              </button>
+
+              <div className="anv-quickview-grid">
+                <div>
+                  <div className="anv-quickview-main-img">
+                    <img
+                      src={qPhotos[quickViewPhotoIndex] || qProduct.imageUrl || ""}
+                      alt={qProduct.name}
+                    />
+                  </div>
+                  {qPhotos.length > 1 && (
+                    <div className="anv-quickview-thumbs">
+                      {qPhotos.map((src, idx) => (
+                        <button
+                          key={src}
+                          type="button"
+                          className={quickViewPhotoIndex === idx ? "active" : ""}
+                          onClick={() => setQuickViewPhotoIndex(idx)}
+                        >
+                          <img src={src} alt={`${qProduct.name} view ${idx + 1}`} />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="anv-quickview-info">
+                  <span className="anv-card-category">{qProduct.category}</span>
+                  <h3>{qProduct.name}</h3>
+                  <div className="anv-card-provenance" style={{ marginBottom: 12 }}>
+                    <Leaf size={12} color="#4f7358" />
+                    <span>{quickViewRow.seller?.storeName ?? "Partner Sanctuary Farm"}</span>
+                  </div>
+                  <p className="anv-quickview-desc">
+                    {qProduct.description || "Small-batch, lab-verified pure harvest crafted in traditional Indian sanctuary collectives."}
+                  </p>
+
+                  <div className="anv-variant-pills" style={{ marginBottom: 16 }}>
+                    {qVariants.map((v, idx) => (
+                      <button
+                        key={v.label}
+                        type="button"
+                        className={`anv-variant-btn ${quickViewVariantIndex === idx ? "active" : ""}`}
+                        onClick={() => setQuickViewVariantIndex(idx)}
+                      >
+                        {v.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="anv-card-price-row" style={{ marginBottom: 18 }}>
+                    <span className="anv-price-current" style={{ fontSize: 24 }}>₹{qPrice.toLocaleString("en-IN")}</span>
+                    <span className="anv-price-mrp">₹{qMrp.toLocaleString("en-IN")}</span>
+                    {qSaving > 0 && <span className="anv-price-save">Save {qSaving}%</span>}
+                  </div>
+
+                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    <button
+                      className="anv-btn-primary"
+                      style={{ flex: 1, justifyContent: "center" }}
+                      onClick={() => {
+                        handleAdd(qProduct);
+                        setQuickViewRow(null);
+                      }}
+                    >
+                      <ShoppingBag size={15} /> Add to Basket
+                    </button>
+                    <Link
+                      href={`/product/${qProduct.slug}`}
+                      onClick={() => {
+                        handleProductClick(qProduct.id);
+                        setQuickViewRow(null);
+                      }}
+                      className="anv-btn-secondary"
+                      style={{ justifyContent: "center", textDecoration: "none" }}
+                    >
+                      Full Details <ArrowRight size={14} />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Floating Back to Top Button */}
+      {showBackToTop && (
+        <button
+          className="anv-back-to-top"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Scroll back to top"
+          title="Back to top"
+        >
+          <ArrowUp size={18} />
+        </button>
+      )}
+
       {/* Floating Compare Bar */}
       <CompareFloatingBar
         items={compareList}
@@ -1859,12 +2051,14 @@ function AnveshanProductCard({
   row,
   onAdd,
   onToggleCompare,
+  onQuickView,
   isComparing,
   onClick,
 }: {
   row: CatalogRow;
   onAdd: () => void;
   onToggleCompare: () => void;
+  onQuickView: () => void;
   isComparing: boolean;
   onClick: () => void;
 }) {
@@ -2015,6 +2209,18 @@ function AnveshanProductCard({
         </div>
 
         <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
+          <button
+            className="product-compare-toggle"
+            style={{ position: "static", borderRadius: 8, padding: "8px 10px", flexShrink: 0 }}
+            onClick={(e) => {
+              e.preventDefault();
+              onQuickView();
+            }}
+            title="Quick view harvest"
+            aria-label={`Quick view ${product.name}`}
+          >
+            <Eye size={13} />
+          </button>
           <button
             className={`product-compare-toggle ${isComparing ? "active" : ""}`}
             style={{ position: "static", borderRadius: 8, padding: "8px 10px", flexShrink: 0 }}
