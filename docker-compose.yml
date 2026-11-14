@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gavyadhenu_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGO_URL=mongodb://mongo:27017/gavyadhenu
+      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID:-rzp_test_GavyadhenuSandbox}
+      - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET:-gavyadhenu_test_secret_key_2026}
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  mongo:
+    image: mongo:7.0
+    container_name: gavyadhenu_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - gavyadhenu_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  gavyadhenu_data:
+    driver: local

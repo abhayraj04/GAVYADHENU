@@ -23,6 +23,11 @@ export function DemoPersonaBar() {
 
   const devLogin = trpc.auth.devLogin.useMutation({
     onSuccess: async (data) => {
+      if (data.sessionToken) {
+        try {
+          localStorage.setItem("gavyadhenu-session-token", data.sessionToken);
+        } catch {}
+      }
       toast.success(`Switched persona to ${data.user?.name} (${data.role})`);
       await refresh();
       setIsOpen(false);

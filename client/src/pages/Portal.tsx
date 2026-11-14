@@ -9,12 +9,15 @@ import {
   Check,
   ChevronRight,
   CircleAlert,
+  Download,
+  Edit3,
   Heart,
   LayoutDashboard,
   Leaf,
   LogOut,
   Package,
   Plus,
+  RefreshCw,
   ShieldCheck,
   Sparkles,
   Store,
@@ -88,13 +91,68 @@ function CustomerPortal() {
   const deleteAddress = trpc.customer.deleteAddress.useMutation({ onSuccess: result => { toast.success(result.message); addresses.refetch(); }, onError: error => toast.error(error.message) });
   const removeWishlist = trpc.customer.removeWishlist.useMutation({ onSuccess: result => { toast.success(result.message); wishlist.refetch(); }, onError: error => toast.error(error.message) });
   const [address, setAddress] = useState({ fullName: "", phone: "", address: "", area: "", city: "", state: "", pincode: "", landmark: "", isDefault: false });
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+
+  const updateProfile = trpc.customer.updateProfile.useMutation({
+    onSuccess: (data) => {
+      toast.success(data.message);
+      dashboard.refetch();
+      setEditingProfile(false);
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
   const submitAddress = (event: FormEvent) => { event.preventDefault(); addAddress.mutate(address); };
   if (dashboard.isLoading) return <PortalSkeleton />;
   const user = dashboard.data?.user;
+
+  const handleStartEditProfile = () => {
+    setProfileName(user?.name || "");
+    setProfilePhone(user?.phone || "");
+    setEditingProfile(true);
+  };
+
+  const handleSaveProfile = (e: FormEvent) => {
+    e.preventDefault();
+    updateProfile.mutate({ name: profileName, phone: profilePhone });
+  };
+
   return <>
     <div className="portal-welcome"><div><span className="portal-kicker">GOOD TO SEE YOU</span><h2>Welcome back, {user?.name?.split(" ")[0] ?? "friend"}.</h2><p>Your everyday essentials, thoughtful rituals, and order updates — all in one place.</p></div><Link className="portal-primary compact" href="/#harvests">Shop the harvest <ChevronRight size={16} /></Link></div>
     <div className="portal-stat-grid"><PortalStat icon={Package} label="Total orders" value={String(dashboard.data?.orderStats.total ?? 0)} /><PortalStat icon={Box} label="Pending orders" value={String(dashboard.data?.orderStats.pending ?? 0)} /><PortalStat icon={Check} label="Delivered" value={String(dashboard.data?.orderStats.delivered ?? 0)} /><PortalStat icon={Wallet} label="Cart items" value={String(dashboard.data?.cartCount ?? 0)} /></div>
-    <div className="portal-grid-two"><section className="portal-panel"><div className="portal-panel-head"><div><span className="portal-kicker">ACCOUNT</span><h3>Profile summary</h3></div><button className="portal-icon-button" onClick={() => toast.info("Profile editing is ready for your account details.")}><ChevronRight size={16} /></button></div><div className="profile-summary"><div className="portal-avatar large">{(user?.name ?? "G").slice(0, 1).toUpperCase()}</div><div><b>{user?.name ?? "Gavyadhenu customer"}</b><span>{user?.email ?? "Email not provided"}</span><span>{user?.phone ?? "Add a phone number for delivery updates"}</span></div></div></section><section className="portal-panel"><div className="portal-panel-head"><div><span className="portal-kicker">SAVED ADDRESSES</span><h3>{addresses.data?.length ?? 0} delivery addresses</h3></div><button className="portal-outline compact" onClick={() => setView("addresses")}><Plus size={15} /> Add</button></div>{addresses.data?.length ? <div className="mini-list">{addresses.data.slice(0, 2).map(item => <div className="mini-list-row" key={item.id}><div><b>{item.fullName}</b><span>{item.address}, {item.city}</span></div><span className="status-chip">{item.isDefault ? "Default" : "Saved"}</span></div>)}</div> : <div className="portal-empty">Save an address to make checkout faster.</div>}</section></div>
+    <div className="portal-grid-two">
+      <section className="portal-panel">
+        <div className="portal-panel-head">
+          <div><span className="portal-kicker">ACCOUNT</span><h3>Profile summary</h3></div>
+          <button className="portal-icon-button" onClick={handleStartEditProfile} title="Edit Profile Details"><Edit3 size={16} /></button>
+        </div>
+        <div className="profile-summary">
+          <div className="portal-avatar large">{(user?.name ?? "G").slice(0, 1).toUpperCase()}</div>
+          <div>
+            <b>{user?.name ?? "Gavyadhenu customer"}</b>
+            <span>{user?.email ?? "Email not provided"}</span>
+            <span>{user?.phone ?? "Add a phone number for delivery updates"}</span>
+          </div>
+        </div>
+        {editingProfile && (
+          <form onSubmit={handleSaveProfile} className="portal-form" style={{ marginTop: 16 }}>
+            <div className="form-two">
+              <label>Full name<input required value={profileName} onChange={e => setProfileName(e.target.value)} /></label>
+              <label>Phone number<input required value={profilePhone} onChange={e => setProfilePhone(e.target.value)} /></label>
+            </div>
+            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+              <button type="submit" className="portal-primary compact" disabled={updateProfile.isPending}>
+                {updateProfile.isPending ? "Saving…" : "Save Changes"}
+              </button>
+              <button type="button" className="portal-outline compact" onClick={() => setEditingProfile(false)}>Cancel</button>
+            </div>
+          </form>
+        )}
+      </section>
+      <section className="portal-panel"><div className="portal-panel-head"><div><span className="portal-kicker">SAVED ADDRESSES</span><h3>{addresses.data?.length ?? 0} delivery addresses</h3></div><button className="portal-outline compact" onClick={() => setView("addresses")}><Plus size={15} /> Add</button></div>{addresses.data?.length ? <div className="mini-list">{addresses.data.slice(0, 2).map(item => <div className="mini-list-row" key={item.id}><div><b>{item.fullName}</b><span>{item.address}, {item.city}</span></div><span className="status-chip">{item.isDefault ? "Default" : "Saved"}</span></div>)}</div> : <div className="portal-empty">Save an address to make checkout faster.</div>}</section>
+    </div>
     <section className="portal-panel portal-section"><div className="portal-panel-head"><div><span className="portal-kicker">ACCOUNT TOOLS</span><h3>Manage your account</h3></div></div><div className="portal-tool-grid"><button onClick={() => setView("crop_doctor")}><span className="tool-icon"><Leaf size={17} /></span><b>AI Crop Doctor</b><small>Scan and diagnose leaf diseases</small></button><button onClick={() => setView("pashu_care")}><span className="tool-icon"><Heart size={17} /></span><b>AI Pashu Care</b><small>Livestock feed, triage & records</small></button><button onClick={() => setView("addresses")}><span className="tool-icon"><Plus size={17} /></span><b>Addresses</b><small>Add or update delivery details</small></button><button onClick={() => setView("wishlist")}><span className="tool-icon"><Heart size={17} /></span><b>Wishlist</b><small>{wishlist.data?.length ?? 0} saved harvests</small></button><button onClick={() => setView("notifications")}><span className="tool-icon"><Bell size={17} /></span><b>Notifications</b><small>Order and platform updates</small></button><Link href="/#harvests"><span className="tool-icon"><Package size={17} /></span><b>Recommended harvests</b><small>Return to the storefront</small></Link></div></section>
     {view === "crop_doctor" && <section className="portal-panel portal-section"><CropDoctorScanner /></section>}
     {view === "pashu_care" && <section className="portal-panel portal-section"><PashuCareModule /></section>}
@@ -124,14 +182,132 @@ function AdminPortal() {
   const dashboard = trpc.admin.dashboard.useQuery();
   const approveSeller = trpc.admin.approveSeller.useMutation({ onSuccess: result => { toast.success(result.message); dashboard.refetch(); }, onError: error => toast.error(error.message) });
   const approveProduct = trpc.admin.approveProduct.useMutation({ onSuccess: result => { toast.success(result.message); dashboard.refetch(); }, onError: error => toast.error(error.message) });
+  const exportCsv = trpc.admin.exportOrdersCsv.useQuery(undefined, { enabled: false });
+
   if (dashboard.isLoading) return <PortalSkeleton />;
   const metrics = dashboard.data?.metrics; const queues = dashboard.data?.queues;
-  return <><div className="portal-welcome admin-welcome"><div><span className="portal-kicker">PLATFORM CONTROL CENTER</span><h2>Keep the marketplace healthy.</h2><p>Review seller and product submissions, then keep every decision traceable in the audit log.</p></div><span className="admin-live"><span /> Live operations</span></div><div className="portal-stat-grid admin-stats"><PortalStat icon={Users} label="Customers" value={String(metrics?.customers ?? 0)} /><PortalStat icon={Store} label="Sellers" value={String(metrics?.sellers ?? 0)} /><PortalStat icon={Package} label="Products" value={String(metrics?.products ?? 0)} /><PortalStat icon={Wallet} label="Verified revenue" value={`₹${metrics?.revenue ?? 0}`} /></div><div className="portal-grid-two"><section className="portal-panel"><div className="portal-panel-head"><div><span className="portal-kicker">SELLER QUEUE</span><h3>Approvals needing review</h3></div><span className="queue-count">{metrics?.pendingSellers ?? 0}</span></div>{queues?.sellers.length ? <div className="approval-list">{queues.sellers.map(item => <div className="approval-row" key={item.profile.id}><div><b>{item.profile.storeName}</b><span>{item.user.name ?? item.user.email ?? "Seller applicant"}</span><small>{item.profile.businessAddress ?? "Business details pending"}</small></div><div className="approval-actions"><button className="portal-outline compact" onClick={() => approveSeller.mutate({ profileId: item.profile.id, status: "rejected" })}>Reject</button><button className="portal-primary compact" onClick={() => approveSeller.mutate({ profileId: item.profile.id, status: "verified" })}><Check size={14} /> Approve</button></div></div>)}</div> : <div className="portal-empty"><Check size={18} /> No seller approvals waiting.</div>}</section><section className="portal-panel"><div className="portal-panel-head"><div><span className="portal-kicker">PRODUCT QUEUE</span><h3>Products awaiting approval</h3></div><span className="queue-count">{metrics?.pendingProducts ?? 0}</span></div>{queues?.products.length ? <div className="approval-list">{queues.products.map((product: any) => <div className="approval-row" key={product.id}><div><b>{product.name}</b><span>{product.category} · ₹{product.price}</span><small>SKU {product.sku} · stock {product.stock}</small></div><div className="approval-actions"><button className="portal-outline compact" onClick={() => approveProduct.mutate({ productId: product.id, status: "rejected" })}>Reject</button><button className="portal-primary compact" onClick={() => approveProduct.mutate({ productId: product.id, status: "approved" })}><Check size={14} /> Approve</button></div></div>)}</div> : <div className="portal-empty"><Check size={18} /> No product approvals waiting.</div>}</section></div><section className="portal-panel portal-section"><div className="portal-panel-head"><div><span className="portal-kicker">CONTROL SURFACE</span><h3>Admin operations</h3></div></div><div className="portal-tool-grid"><button onClick={() => setView("bi")}><span className="tool-icon"><BarChart3 size={17} /></span><b>Executive BI & RFM</b><small>Platform revenue and customer cohorts</small></button><button onClick={() => toast.info("Customer management is protected and ready for the next data module.")}><span className="tool-icon"><Users size={17} /></span><b>Customer management</b><small>Search, activate, and review accounts</small></button><button onClick={() => toast.info("Order operations are connected to the relational order tables.")}><span className="tool-icon"><Package size={17} /></span><b>Order management</b><small>Monitor status, refunds, and disputes</small></button><button onClick={() => toast.info("Payment records use verification-first statuses.")}><span className="tool-icon"><Wallet size={17} /></span><b>Payments & payouts</b><small>Review verified and pending money flows</small></button></div></section>{view === "bi" && <section className="portal-panel portal-section"><div className="portal-panel-head"><div><span className="portal-kicker">EXECUTIVE INTELLIGENCE</span><h3>Platform Business Intelligence & Telemetry</h3></div><button className="portal-icon-button" onClick={() => setView("overview")}><X size={17} /></button></div><AdminBIPanel /></section>}</>;
+
+  const handleExportCsv = async () => {
+    const result = await exportCsv.refetch();
+    if (result.data) {
+      const blob = new Blob([result.data], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `gavyadhenu-orders-${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("Orders report exported to CSV successfully.");
+    }
+  };
+
+  return <><div className="portal-welcome admin-welcome"><div><span className="portal-kicker">PLATFORM CONTROL CENTER</span><h2>Keep the marketplace healthy.</h2><p>Review seller and product submissions, then keep every decision traceable in the audit log.</p></div><span className="admin-live"><span /> Live operations</span></div><div className="portal-stat-grid admin-stats"><PortalStat icon={Users} label="Customers" value={String(metrics?.customers ?? 0)} /><PortalStat icon={Store} label="Sellers" value={String(metrics?.sellers ?? 0)} /><PortalStat icon={Package} label="Products" value={String(metrics?.products ?? 0)} /><PortalStat icon={Wallet} label="Verified revenue" value={`₹${metrics?.revenue ?? 0}`} /></div><div className="portal-grid-two"><section className="portal-panel"><div className="portal-panel-head"><div><span className="portal-kicker">SELLER QUEUE</span><h3>Approvals needing review</h3></div><span className="queue-count">{metrics?.pendingSellers ?? 0}</span></div>{queues?.sellers.length ? <div className="approval-list">{queues.sellers.map(item => <div className="approval-row" key={item.profile.id}><div><b>{item.profile.storeName}</b><span>{item.user.name ?? item.user.email ?? "Seller applicant"}</span><small>{item.profile.businessAddress ?? "Business details pending"}</small></div><div className="approval-actions"><button className="portal-outline compact" onClick={() => approveSeller.mutate({ profileId: item.profile.id, status: "rejected" })}>Reject</button><button className="portal-primary compact" onClick={() => approveSeller.mutate({ profileId: item.profile.id, status: "verified" })}><Check size={14} /> Approve</button></div></div>)}</div> : <div className="portal-empty"><Check size={18} /> No seller approvals waiting.</div>}</section><section className="portal-panel"><div className="portal-panel-head"><div><span className="portal-kicker">PRODUCT QUEUE</span><h3>Products awaiting approval</h3></div><span className="queue-count">{metrics?.pendingProducts ?? 0}</span></div>{queues?.products.length ? <div className="approval-list">{queues.products.map((product: any) => <div className="approval-row" key={product.id}><div><b>{product.name}</b><span>{product.category} · ₹{product.price}</span><small>SKU {product.sku} · stock {product.stock}</small></div><div className="approval-actions"><button className="portal-outline compact" onClick={() => approveProduct.mutate({ productId: product.id, status: "rejected" })}>Reject</button><button className="portal-primary compact" onClick={() => approveProduct.mutate({ productId: product.id, status: "approved" })}><Check size={14} /> Approve</button></div></div>)}</div> : <div className="portal-empty"><Check size={18} /> No product approvals waiting.</div>}</section></div><section className="portal-panel portal-section"><div className="portal-panel-head"><div><span className="portal-kicker">CONTROL SURFACE</span><h3>Admin operations</h3></div></div><div className="portal-tool-grid"><button onClick={() => setView("bi")}><span className="tool-icon"><BarChart3 size={17} /></span><b>Executive BI & RFM</b><small>Platform revenue and customer cohorts</small></button><button onClick={() => setView("customers")}><span className="tool-icon"><Users size={17} /></span><b>Customer management</b><small>Search, activate, and review accounts</small></button><button onClick={handleExportCsv}><span className="tool-icon"><Download size={17} /></span><b>Export Orders CSV</b><small>Download orders and revenue reports</small></button><button onClick={() => toast.info("Payment records use verification-first statuses.")}><span className="tool-icon"><Wallet size={17} /></span><b>Payments & payouts</b><small>Review verified and pending money flows</small></button></div></section>{view === "bi" && <section className="portal-panel portal-section"><div className="portal-panel-head"><div><span className="portal-kicker">EXECUTIVE INTELLIGENCE</span><h3>Platform Business Intelligence & Telemetry</h3></div><button className="portal-icon-button" onClick={() => setView("overview")}><X size={17} /></button></div><AdminBIPanel /></section>}{view === "customers" && <AdminCustomersPanel onBack={() => setView("overview")} />}</>;
+}
+
+function AdminCustomersPanel({ onBack }: { onBack: () => void }) {
+  const customers = trpc.admin.customers.useQuery();
+  return (
+    <section className="portal-panel portal-section">
+      <div className="portal-panel-head">
+        <div>
+          <span className="portal-kicker">CUSTOMER INTELLIGENCE</span>
+          <h3>Verified Customer Accounts</h3>
+        </div>
+        <button className="portal-icon-button" onClick={onBack}>
+          <X size={17} />
+        </button>
+      </div>
+      {customers.isLoading ? (
+        <div className="portal-empty">Loading customers...</div>
+      ) : (
+        <div className="portal-table-wrap">
+          <table className="portal-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Contact</th>
+                <th>Role</th>
+                <th>Orders</th>
+                <th>Total Spent</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {customers.data?.map((c) => (
+                <tr key={c.id}>
+                  <td><b>{c.name || "Member"}</b></td>
+                  <td>
+                    <span>{c.email}</span>
+                    <small>{c.phone}</small>
+                  </td>
+                  <td><span className="status-chip">{c.role}</span></td>
+                  <td>{c.orderCount}</td>
+                  <td>₹{c.totalSpent}</td>
+                  <td>
+                    <span className={`status-chip ${c.isActive ? "verified" : "rejected"}`}>
+                      {c.isActive ? "Active" : "Suspended"}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
 }
 
 function NotificationPanel({ items }: { items: Array<{ id: number; title: string; message: string; isRead: boolean; createdAt: Date }> }) { return <section className="portal-panel portal-section"><div className="portal-panel-head"><div><span className="portal-kicker">INBOX</span><h3>Notifications</h3></div></div>{items.length ? <div className="notification-list">{items.map(item => <div className={`notification-row ${item.isRead ? "" : "unread"}`} key={item.id}><Bell size={16} /><div><b>{item.title}</b><span>{item.message}</span><small>{new Date(item.createdAt).toLocaleString()}</small></div></div>)}</div> : <div className="portal-empty">You’re all caught up.</div>}</section>; }
 function WishlistPanel({ items, onRemove }: { items: Array<{ item: { id: number; productId: number }; product: { id: number; slug: string; name: string; description: string | null; price: string; imageUrl: string | null }; seller: { storeName: string } | null }>; onRemove: (productId: number) => void }) { return <section className="portal-panel portal-section"><div className="portal-panel-head"><div><span className="portal-kicker">SAVED HARVESTS</span><h3>Your wishlist</h3></div></div>{items.length ? <div className="wishlist-list">{items.map(item => <div className="wishlist-row" key={item.item.id}><div className="wishlist-art">{item.product.imageUrl ? <img src={item.product.imageUrl} alt="" /> : <Heart size={19} />}</div><div><b>{item.product.name}</b><small>{item.seller?.storeName ?? "Partner farm"}</small><span>₹{Number(item.product.price).toLocaleString("en-IN")}</span></div><Link className="portal-outline compact" href={`/product/${item.product.slug}`}>View</Link><button className="portal-danger" onClick={() => onRemove(item.product.id)} aria-label={`Remove ${item.product.name} from wishlist`}><Trash2 size={15} /></button></div>)}</div> : <div className="portal-empty">Save products you love here.</div>}</section>; }
 
-function OrdersPanel({ items }: { items: Array<{ order: { orderNumber: string; createdAt: Date; total: string; paymentStatus: string; status: string }; items: Array<{ id: number; productName: string; quantity: number; unitPrice: string }> }> }) { const cancel = trpc.customer.cancelOrder.useMutation({ onSuccess: () => toast.success("Order cancelled successfully."), onError: error => toast.error(error.message) }); return <section className="portal-panel portal-section"><div className="portal-panel-head"><div><span className="portal-kicker">ORDER HISTORY</span><h3>My orders</h3></div></div>{items.length ? <div className="portal-table-wrap"><table className="portal-table"><thead><tr><th>Order</th><th>Date</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody>{items.map(item => <tr key={item.order.orderNumber}><td><b>#{item.order.orderNumber}</b></td><td>{new Date(item.order.createdAt).toLocaleDateString()}</td><td>{item.items.map(line => `${line.productName} × ${line.quantity}`).join(", ")}</td><td>₹{item.order.total}</td><td><span className="status-chip">{item.order.paymentStatus}</span></td><td><span className="status-chip">{item.order.status.replace("_", " ")}</span></td><td><Link href={`/order-success?order=${encodeURIComponent(item.order.orderNumber)}`} className="portal-text-link">Track</Link>{["placed", "confirmed"].includes(item.order.status) && <button className="portal-text-button" onClick={() => window.confirm("Are you sure you want to cancel this order?") && cancel.mutate({ orderNumber: item.order.orderNumber })}>Cancel</button>}</td></tr>)}</tbody></table></div> : <div className="portal-empty">You haven’t placed any orders yet.</div>}</section>; }
+function OrdersPanel({ items }: { items: Array<{ order: { orderNumber: string; createdAt: Date; total: string; paymentStatus: string; status: string }; items: Array<{ id: number; productName: string; quantity: number; unitPrice: string }> }> }) {
+  const cancel = trpc.customer.cancelOrder.useMutation({
+    onSuccess: () => toast.success("Order cancelled successfully."),
+    onError: error => toast.error(error.message)
+  });
+  const requestReturn = trpc.customer.requestReturn.useMutation({
+    onSuccess: (data) => toast.success(data.message),
+    onError: error => toast.error(error.message)
+  });
+
+  return <section className="portal-panel portal-section">
+    <div className="portal-panel-head"><div><span className="portal-kicker">ORDER HISTORY</span><h3>My orders</h3></div></div>
+    {items.length ? (
+      <div className="portal-table-wrap">
+        <table className="portal-table">
+          <thead>
+            <tr><th>Order</th><th>Date</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {items.map(item => (
+              <tr key={item.order.orderNumber}>
+                <td><b>#{item.order.orderNumber}</b></td>
+                <td>{new Date(item.order.createdAt).toLocaleDateString()}</td>
+                <td>{item.items.map(line => `${line.productName} × ${line.quantity}`).join(", ")}</td>
+                <td>₹{item.order.total}</td>
+                <td><span className="status-chip">{item.order.paymentStatus}</span></td>
+                <td><span className="status-chip">{item.order.status.replace("_", " ")}</span></td>
+                <td style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <Link href={`/order-success?order=${encodeURIComponent(item.order.orderNumber)}`} className="portal-text-link">Track</Link>
+                  {["placed", "confirmed"].includes(item.order.status) && (
+                    <button className="portal-text-button" onClick={() => window.confirm("Are you sure you want to cancel this order?") && cancel.mutate({ orderNumber: item.order.orderNumber })}>Cancel</button>
+                  )}
+                  {item.order.status === "delivered" && (
+                    <button className="portal-text-button" onClick={() => {
+                      const reason = window.prompt("Reason for return request (e.g. damaged seal, broken jar, freshness issue):");
+                      if (reason) requestReturn.mutate({ orderNumber: item.order.orderNumber, reason });
+                    }}>Return</button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : <div className="portal-empty">You haven’t placed any orders yet.</div>}
+  </section>;
+}
 function PortalStat({ icon: Icon, label, value }: { icon: typeof Package; label: string; value: string }) { return <div className="portal-stat"><span className="stat-icon"><Icon size={18} /></span><div><small>{label}</small><strong>{value}</strong></div></div>; }
 function PortalSkeleton() { return <div className="portal-skeleton"><div /><div /><div /><div /></div>; }

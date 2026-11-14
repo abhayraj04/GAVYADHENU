@@ -42,6 +42,8 @@ import {
   ProductCompareModal,
 } from "@/components/ProductCompareModal";
 import { getProductPhotos } from "@/productGalleries";
+import { ProductImage } from "@/components/ProductImage";
+import { PolicyModal, type PolicyType } from "@/components/PolicyModal";
 
 const categories = [
   "All harvests",
@@ -248,6 +250,7 @@ export default function Storefront() {
   const [quickViewPhotoIndex, setQuickViewPhotoIndex] = useState(0);
   const [quickViewVariantIndex, setQuickViewVariantIndex] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [activePolicy, setActivePolicy] = useState<PolicyType | null>(null);
 
   useEffect(() => {
     const onScroll = () => setShowBackToTop(window.scrollY > 450);
@@ -1484,6 +1487,27 @@ export default function Storefront() {
               </li>
             </ul>
           </div>
+
+          <div className="anv-footer-col">
+            <h5>Legal & Policies</h5>
+            <ul className="anv-footer-links">
+              <li>
+                <button onClick={() => setActivePolicy("privacy")}>Privacy Policy</button>
+              </li>
+              <li>
+                <button onClick={() => setActivePolicy("terms")}>Terms & Conditions</button>
+              </li>
+              <li>
+                <button onClick={() => setActivePolicy("shipping")}>Shipping & Delivery</button>
+              </li>
+              <li>
+                <button onClick={() => setActivePolicy("returns")}>Return & Refund</button>
+              </li>
+              <li>
+                <button onClick={() => setActivePolicy("about")}>Our Vision & Story</button>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div className="anv-footer-bottom">
@@ -1541,9 +1565,10 @@ export default function Storefront() {
               <div className="anv-quickview-grid">
                 <div>
                   <div className="anv-quickview-main-img">
-                    <img
+                    <ProductImage
                       src={qPhotos[quickViewPhotoIndex] || qProduct.imageUrl || ""}
                       alt={qProduct.name}
+                      aspectRatio="square"
                     />
                   </div>
                   {qPhotos.length > 1 && (
@@ -2042,6 +2067,11 @@ export default function Storefront() {
           <span>Basket</span>
         </button>
       </nav>
+
+      {/* Commercial Policy Modal */}
+      {activePolicy && (
+        <PolicyModal type={activePolicy} onClose={() => setActivePolicy(null)} />
+      )}
     </div>
   );
 }
@@ -2098,13 +2128,12 @@ function AnveshanProductCard({
   return (
     <article className="anv-product-card">
       <Link href={`/product/${product.slug}`} onClick={onClick} className="anv-card-media">
-        {photos.length > 0 ? (
-          <img src={photos[photoIndex] || product.imageUrl || ""} alt={product.name} />
-        ) : (
-          <div style={{ width: "100%", height: "100%", display: "grid", placeItems: "center", color: "#577154" }}>
-            <Sparkles size={36} />
-          </div>
-        )}
+        <ProductImage
+          src={photos[photoIndex] || product.imageUrl || ""}
+          alt={product.name}
+          aspectRatio="square"
+          className="anv-card-img"
+        />
 
         {isBestseller ? (
           <span className="anv-card-tag bestseller">BESTSELLER</span>

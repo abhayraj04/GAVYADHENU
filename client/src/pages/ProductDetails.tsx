@@ -3,6 +3,7 @@ import { startLogin } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { getProductPhotos } from "@/productGalleries";
 import { getProductEnrichment, type ProductEnrichmentData } from "@/productEnrichment";
+import { ProductImageGallery } from "@/components/ProductImageGallery";
 import {
   ArrowLeft,
   ArrowLeftRight,
@@ -221,56 +222,14 @@ export default function ProductDetails({ slug }: { slug: string }) {
         </Link>
 
         <div className="product-detail-grid">
-          {/* Gallery Column */}
+          {/* Gallery Column with Interactive Magnifier Zoom */}
           <section className="product-gallery">
-            <div className="product-gallery-main">
-              {gallery.length ? (
-                <img src={gallery[imageIndex]} alt={product.name} />
-              ) : (
-                <div className="product-gallery-placeholder">
-                  <Sparkles size={80} />
-                  <span>Gavyadhenu Harvest</span>
-                </div>
-              )}
-              <span className="gallery-badge">{product.category}</span>
-              {gallery.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    className="gallery-nav prev"
-                    aria-label="Previous photo"
-                    onClick={() => setImageIndex((idx) => (idx > 0 ? idx - 1 : gallery.length - 1))}
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-                  <button
-                    type="button"
-                    className="gallery-nav next"
-                    aria-label="Next photo"
-                    onClick={() => setImageIndex((idx) => (idx < gallery.length - 1 ? idx + 1 : 0))}
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-                  <div className="gallery-counter">
-                    {imageIndex + 1} / {gallery.length}
-                  </div>
-                </>
-              )}
-            </div>
-            {gallery.length > 0 && (
-              <div className="product-thumbs">
-                {gallery.map((image, index) => (
-                  <button
-                    key={`${image}-${index}`}
-                    className={imageIndex === index ? "active" : ""}
-                    onClick={() => setImageIndex(index)}
-                    aria-label={`Select photo ${index + 1}`}
-                  >
-                    <img src={image} alt={`${product.name} photo ${index + 1}`} />
-                  </button>
-                ))}
-              </div>
-            )}
+            <ProductImageGallery
+              images={gallery}
+              productName={product.name}
+              category={product.category}
+              badge={enrichment?.labTest?.accreditation || "100% Vedic & Pure"}
+            />
           </section>
 
           {/* Product Info Column */}

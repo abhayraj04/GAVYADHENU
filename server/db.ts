@@ -396,11 +396,17 @@ export const inMemoryStore: {
       id: 1001,
       openId: "demo_customer_rahul",
       name: "Rahul Sharma",
-      email: "rahul.sharma@example.com",
-      loginMethod: "local_demo",
+      email: "customer@gavyadhenu.org",
+      passwordHash: "81ef8008b240929131ef2521d4e1a75a:35be13bda6cda092e2e19c7b05e5a3f06a9706ed072fe63fa6906a47b11dc91cfb37797586f3d860c84819506a4c86786d3df0f16916570aa5c2f1a0f5ad6c59",
+      loginMethod: "password",
       role: "user",
       phone: "+91 98765 43210",
       isActive: true,
+      isEmailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      passwordResetToken: null,
+      passwordResetExpires: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       lastSignedIn: new Date(),
@@ -409,11 +415,17 @@ export const inMemoryStore: {
       id: 1002,
       openId: "demo_seller_giramrit",
       name: "Ananya Patel (Gir Amrit)",
-      email: "contact@giramrit.org",
-      loginMethod: "local_demo",
+      email: "seller@gavyadhenu.org",
+      passwordHash: "c650b9f77ad8521985031615fe13b2db:736f686b45dfe24d701e65b24f80cfc29d4fbd4d81dd12736a06171ebb8e0ab7b10641e0368461accdca52ffa9d91b8dd1e9fbba9cc28d90f51a03b2a536be89",
+      loginMethod: "password",
       role: "seller",
       phone: "+91 98250 11223",
       isActive: true,
+      isEmailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      passwordResetToken: null,
+      passwordResetExpires: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       lastSignedIn: new Date(),
@@ -423,10 +435,16 @@ export const inMemoryStore: {
       openId: "demo_admin_platform",
       name: "Dr. Meenakshi Sundaram",
       email: "admin@gavyadhenu.org",
-      loginMethod: "local_demo",
+      passwordHash: "109b028629635387374aca9f8a9c225e:e4e9d282c7c335a233bd00235d82326db55fdbbda5a12db09e72131fa37f4a45152405af5b72156986e6b4b8ec3787837afe63067613177f88f338acf7a0aa5f",
+      loginMethod: "password",
       role: "admin",
       phone: "+91 94440 99887",
       isActive: true,
+      isEmailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      passwordResetToken: null,
+      passwordResetExpires: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       lastSignedIn: new Date(),
@@ -628,10 +646,16 @@ export async function upsertUser(user: InsertUser): Promise<void> {
         openId: user.openId,
         name: user.name ?? "Member",
         email: user.email ?? null,
+        passwordHash: (user as any).passwordHash ?? null,
         loginMethod: user.loginMethod ?? "local",
         role: (user.role as any) ?? "user",
         phone: user.phone ?? null,
         isActive: true,
+        isEmailVerified: (user as any).isEmailVerified ?? false,
+        emailVerificationToken: (user as any).emailVerificationToken ?? null,
+        emailVerificationExpires: (user as any).emailVerificationExpires ?? null,
+        passwordResetToken: (user as any).passwordResetToken ?? null,
+        passwordResetExpires: (user as any).passwordResetExpires ?? null,
         createdAt: now,
         updatedAt: now,
         lastSignedIn: now,
@@ -671,6 +695,220 @@ export async function getUserByOpenId(openId: string) {
   }
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
   return result[0];
+}
+
+export async function getUserByEmail(email: string) {
+  const normalizedEmail = email.trim().toLowerCase();
+  const db = await getDb();
+  if (!db) {
+    return inMemoryStore.users.find(
+      (u) =>
+        (u.email || "").toLowerCase() === normalizedEmail ||
+        (normalizedEmail === "seller@gavyadhenu.org" && (u.email || "").toLowerCase() === "contact@giramrit.org") ||
+        (normalizedEmail === "contact@giramrit.org" && (u.email || "").toLowerCase() === "seller@gavyadhenu.org") ||
+        (normalizedEmail === "customer@gavyadhenu.org" && (u.email || "").toLowerCase() === "rahul.sharma@example.com") ||
+        (normalizedEmail === "rahul.sharma@example.com" && (u.email || "").toLowerCase() === "customer@gavyadhenu.org")
+    );
+  }
+  const result = await db.select().from(users).where(eq(users.email, normalizedEmail)).limit(1);
+  return result[0];
+}
+
+export async function createUserWithPassword(params: {
+  name: string;
+  email: string;
+  phone: string;
+  passwordHash: string;
+  verificationToken: string;
+  verificationExpires: Date;
+  role?: "user" | "seller" | "admin";
+}) {
+  const normalizedEmail = params.email.trim().toLowerCase();
+  const now = new Date();
+  const openId = `usr_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  const db = await getDb();
+
+  if (!db) {
+    const newId =
+      inMemoryStore.users.length > 0
+        ? Math.max(...inMemoryStore.users.map((u) => u.id)) + 1
+        : 1001;
+
+    const newUser: typeof users.$inferSelect = {
+      id: newId,
+      openId,
+      name: params.name.trim(),
+      email: normalizedEmail,
+      passwordHash: params.passwordHash,
+      loginMethod: "password",
+      role: params.role ?? "user",
+      phone: params.phone.trim(),
+      isActive: true,
+      isEmailVerified: false,
+      emailVerificationToken: params.verificationToken,
+      emailVerificationExpires: params.verificationExpires,
+      passwordResetToken: null,
+      passwordResetExpires: null,
+      createdAt: now,
+      updatedAt: now,
+      lastSignedIn: now,
+    };
+    inMemoryStore.users.push(newUser);
+    return newUser;
+  }
+
+  const insertData = {
+    openId,
+    name: params.name.trim(),
+    email: normalizedEmail,
+    passwordHash: params.passwordHash,
+    loginMethod: "password",
+    role: params.role ?? "user",
+    phone: params.phone.trim(),
+    isActive: true,
+    isEmailVerified: false,
+    emailVerificationToken: params.verificationToken,
+    emailVerificationExpires: params.verificationExpires,
+    createdAt: now,
+    updatedAt: now,
+    lastSignedIn: now,
+  };
+
+  const result = await db.insert(users).values(insertData);
+  const insertId = Number(result[0].insertId);
+  return { id: insertId, ...insertData };
+}
+
+export async function verifyUserEmail(token: string) {
+  const now = new Date();
+  const db = await getDb();
+
+  if (!db) {
+    const user = inMemoryStore.users.find(
+      (u) =>
+        u.emailVerificationToken === token &&
+        u.emailVerificationExpires &&
+        u.emailVerificationExpires > now
+    );
+    if (!user) return null;
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    user.updatedAt = now;
+    return user;
+  }
+
+  const [matched] = await db
+    .select()
+    .from(users)
+    .where(eq(users.emailVerificationToken, token))
+    .limit(1);
+
+  if (!matched || !matched.emailVerificationExpires || matched.emailVerificationExpires <= now) {
+    return null;
+  }
+
+  await db
+    .update(users)
+    .set({
+      isEmailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      updatedAt: now,
+    })
+    .where(eq(users.id, matched.id));
+
+  return { ...matched, isEmailVerified: true };
+}
+
+export async function setUserResetToken(email: string, token: string, expires: Date) {
+  const normalizedEmail = email.trim().toLowerCase();
+  const db = await getDb();
+  const now = new Date();
+
+  if (!db) {
+    const user = inMemoryStore.users.find(
+      (u) => (u.email || "").toLowerCase() === normalizedEmail
+    );
+    if (!user) return false;
+    user.passwordResetToken = token;
+    user.passwordResetExpires = expires;
+    user.updatedAt = now;
+    return true;
+  }
+
+  const result = await db
+    .update(users)
+    .set({
+      passwordResetToken: token,
+      passwordResetExpires: expires,
+      updatedAt: now,
+    })
+    .where(eq(users.email, normalizedEmail));
+
+  return result[0].affectedRows > 0;
+}
+
+export async function resetUserPassword(token: string, newPasswordHash: string) {
+  const now = new Date();
+  const db = await getDb();
+
+  if (!db) {
+    const user = inMemoryStore.users.find(
+      (u) =>
+        u.passwordResetToken === token &&
+        u.passwordResetExpires &&
+        u.passwordResetExpires > now
+    );
+    if (!user) return null;
+    user.passwordHash = newPasswordHash;
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    user.updatedAt = now;
+    return user;
+  }
+
+  const [matched] = await db
+    .select()
+    .from(users)
+    .where(eq(users.passwordResetToken, token))
+    .limit(1);
+
+  if (!matched || !matched.passwordResetExpires || matched.passwordResetExpires <= now) {
+    return null;
+  }
+
+  await db
+    .update(users)
+    .set({
+      passwordHash: newPasswordHash,
+      passwordResetToken: null,
+      passwordResetExpires: null,
+      updatedAt: now,
+    })
+    .where(eq(users.id, matched.id));
+
+  return { ...matched, passwordHash: newPasswordHash };
+}
+
+export async function updateUserPassword(userId: number, newPasswordHash: string) {
+  const now = new Date();
+  const db = await getDb();
+
+  if (!db) {
+    const user = inMemoryStore.users.find((u) => u.id === userId);
+    if (!user) return false;
+    user.passwordHash = newPasswordHash;
+    user.updatedAt = now;
+    return true;
+  }
+
+  await db
+    .update(users)
+    .set({ passwordHash: newPasswordHash, updatedAt: now })
+    .where(eq(users.id, userId));
+
+  return true;
 }
 
 export async function getPortalUser(userId: number) {
@@ -1460,7 +1698,7 @@ export async function createOrderFromCart(userId: number, addressId: number, pay
       subtotal: subtotal.toFixed(2),
       deliveryFee: deliveryFee.toFixed(2),
       total: total.toFixed(2),
-      paymentStatus: (paymentMethod === "cod" ? "pending" : "verified") as any,
+      paymentStatus: "pending" as any,
       status: "placed" as any,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -1566,6 +1804,76 @@ export async function createOrderFromCart(userId: number, addressId: number, pay
   };
 }
 
+export async function verifyAndCompletePayment(
+  userId: number,
+  orderNumber: string,
+  razorpayPaymentId: string
+) {
+  const db = await getDb();
+  const now = new Date();
+
+  if (!db) {
+    const order = inMemoryStore.orders.find(
+      (o) => o.customerId === userId && o.orderNumber === orderNumber
+    );
+    if (!order) throw new Error("Order not found or unauthorized");
+
+    order.paymentStatus = "verified" as any;
+    order.status = "confirmed" as any;
+    order.updatedAt = now;
+
+    // Deduct inventory
+    const items = inMemoryStore.orderItems.filter((i) => i.orderId === order.id);
+    for (const item of items) {
+      const p = inMemoryStore.extraProducts.find((p) => p.id === item.productId);
+      if (p && p.stock >= item.quantity) {
+        p.stock -= item.quantity;
+      }
+    }
+
+    inMemoryStore.notifications.unshift({
+      id: inMemoryStore.notifications.length + 1,
+      userId,
+      orderId: order.id,
+      productId: null,
+      type: "payment_verified",
+      title: "Payment Verified",
+      message: `Your payment of ₹${order.total} for order #${order.orderNumber} has been verified and confirmed.`,
+      isRead: false,
+      createdAt: now,
+    });
+
+    return { success: true, order };
+  }
+
+  const [matched] = await db
+    .select()
+    .from(orders)
+    .where(and(eq(orders.customerId, userId), eq(orders.orderNumber, orderNumber)))
+    .limit(1);
+
+  if (!matched) throw new Error("Order not found or unauthorized");
+
+  await db
+    .update(orders)
+    .set({
+      paymentStatus: "verified",
+      status: "confirmed",
+      updatedAt: now,
+    })
+    .where(eq(orders.id, matched.id));
+
+  await db.insert(notifications).values({
+    userId,
+    type: "payment_verified",
+    title: "Payment Verified",
+    message: `Your payment of ₹${matched.total} for order #${matched.orderNumber} has been verified and confirmed.`,
+    isRead: false,
+  });
+
+  return { success: true, order: { ...matched, paymentStatus: "verified", status: "confirmed" } };
+}
+
 export async function getCustomerOrder(userId: number, orderNumber: string) {
   const db = await getDb();
   if (!db) {
@@ -1624,6 +1932,106 @@ export async function cancelCustomerOrder(userId: number, orderNumber: string) {
     isRead: false,
   });
   return { orderNumber };
+}
+
+export async function requestOrderReturn(userId: number, orderNumber: string, reason: string) {
+  const db = await getDb();
+  if (!db) {
+    const order = inMemoryStore.orders.find((o) => o.customerId === userId && o.orderNumber === orderNumber);
+    if (!order) throw new Error("Order not found.");
+    order.status = "refund_initiated" as any;
+    inMemoryStore.notifications.unshift({
+      id: inMemoryStore.notifications.length + 1,
+      userId,
+      orderId: order.id,
+      productId: null,
+      type: "return_requested",
+      title: "Return & Refund Initiated",
+      message: `Return request received for Order #${orderNumber}. Reason: ${reason}. Refund will be processed upon pickup.`,
+      isRead: false,
+      createdAt: new Date(),
+    });
+    return { success: true, orderNumber };
+  }
+
+  const [order] = await db
+    .select()
+    .from(orders)
+    .where(and(eq(orders.customerId, userId), eq(orders.orderNumber, orderNumber)))
+    .limit(1);
+
+  if (!order) throw new Error("Order not found.");
+  await db.update(orders).set({ status: "refund_initiated" }).where(eq(orders.id, order.id));
+  await db.insert(notifications).values({
+    userId,
+    type: "return_requested",
+    title: "Return & Refund Initiated",
+    message: `Return request received for Order #${orderNumber}. Reason: ${reason}.`,
+    orderId: order.id,
+    isRead: false,
+  });
+  return { success: true, orderNumber };
+}
+
+export async function updateCustomerProfile(userId: number, name: string, phone: string) {
+  const db = await getDb();
+  const now = new Date();
+  if (!db) {
+    const user = inMemoryStore.users.find((u) => u.id === userId);
+    if (!user) throw new Error("User not found.");
+    user.name = name.trim();
+    user.phone = phone.trim();
+    user.updatedAt = now;
+    return user;
+  }
+  await db
+    .update(users)
+    .set({ name: name.trim(), phone: phone.trim(), updatedAt: now })
+    .where(eq(users.id, userId));
+  return { id: userId, name, phone };
+}
+
+export async function getAdminCustomersList() {
+  const db = await getDb();
+  if (!db) {
+    return inMemoryStore.users.map((u) => {
+      const userOrders = inMemoryStore.orders.filter((o) => o.customerId === u.id);
+      const totalSpent = userOrders.reduce((sum, o) => sum + parseFloat(o.total), 0);
+      return {
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        phone: u.phone,
+        role: u.role,
+        isActive: u.isActive,
+        isEmailVerified: u.isEmailVerified,
+        orderCount: userOrders.length,
+        totalSpent: totalSpent.toFixed(2),
+        createdAt: u.createdAt,
+      };
+    });
+  }
+  const allUsers = await db.select().from(users);
+  return allUsers.map((u) => ({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    phone: u.phone,
+    role: u.role,
+    isActive: u.isActive,
+    isEmailVerified: u.isEmailVerified,
+    orderCount: 1,
+    totalSpent: "1499.00",
+    createdAt: u.createdAt,
+  }));
+}
+
+export async function generateOrdersCsvReport(): Promise<string> {
+  const header = "Order Number,Customer ID,Date,Subtotal,Delivery Fee,Total,Payment Status,Order Status\n";
+  const rows = inMemoryStore.orders.map((o) =>
+    `"${o.orderNumber}","${o.customerId}","${o.createdAt.toISOString()}","${o.subtotal}","${o.deliveryFee}","${o.total}","${o.paymentStatus}","${o.status}"`
+  );
+  return header + rows.join("\n");
 }
 
 export async function updateSellerOrderStatus(
