@@ -2095,14 +2095,14 @@ function AnveshanProductCard({
 
   const variants = isLiquid
     ? [
-        { label: "500 ml", multiplier: 1 },
-        { label: "1 Litre", multiplier: 1.85 },
-        { label: "5 Litres", multiplier: 8.5 },
+        { label: "500 ml", shortLabel: "500ml", multiplier: 1 },
+        { label: "1 Litre", shortLabel: "1L", multiplier: 1.85 },
+        { label: "5 Litres", shortLabel: "5L", multiplier: 8.5 },
       ]
     : [
-        { label: "250 g", multiplier: 1 },
-        { label: "500 g", multiplier: 1.85 },
-        { label: "1 kg", multiplier: 3.5 },
+        { label: "250 g", shortLabel: "250g", multiplier: 1 },
+        { label: "500 g", shortLabel: "500g", multiplier: 1.85 },
+        { label: "1 kg", shortLabel: "1kg", multiplier: 3.5 },
       ];
 
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -2223,7 +2223,8 @@ function AnveshanProductCard({
                 setSelectedVariantIndex(idx);
               }}
             >
-              {v.label}
+              <span className="anv-variant-desktop">{v.label}</span>
+              <span className="anv-variant-mobile">{v.shortLabel}</span>
             </button>
           ))}
         </div>
@@ -2234,10 +2235,9 @@ function AnveshanProductCard({
           {saving > 0 && <span className="anv-price-save">Save {saving}%</span>}
         </div>
 
-        <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
+        <div className="anv-card-actions-row">
           <button
-            className="product-compare-toggle"
-            style={{ position: "static", borderRadius: 8, padding: "8px 10px", flexShrink: 0 }}
+            className="anv-card-action-icon-btn"
             onClick={(e) => {
               e.preventDefault();
               onQuickView();
@@ -2248,18 +2248,24 @@ function AnveshanProductCard({
             <Eye size={13} />
           </button>
           <button
-            className={`product-compare-toggle ${isComparing ? "active" : ""}`}
-            style={{ position: "static", borderRadius: 8, padding: "8px 10px", flexShrink: 0 }}
+            className={`anv-card-action-icon-btn ${isComparing ? "active" : ""}`}
             onClick={(e) => {
               e.preventDefault();
               onToggleCompare();
             }}
             title="Compare harvest"
+            aria-label={`Compare ${product.name}`}
           >
             <ArrowLeftRight size={13} />
           </button>
-          <button className="anv-card-btn-add" onClick={onAdd}>
-            <Plus size={15} /> Add to Basket
+          <button
+            className="anv-card-btn-add"
+            onClick={onAdd}
+            aria-label={`Add ${product.name} to basket`}
+          >
+            <Plus size={14} />
+            <span className="anv-btn-text-desktop">Add to Basket</span>
+            <span className="anv-btn-text-mobile">Add</span>
           </button>
         </div>
       </div>

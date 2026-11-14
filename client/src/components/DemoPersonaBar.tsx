@@ -50,18 +50,18 @@ export function DemoPersonaBar() {
   if (isMinimized) {
     return (
       <button
-        className="fixed bottom-20 sm:bottom-4 left-3 sm:left-4 z-40 flex items-center gap-1.5 rounded-full border border-emerald-700/40 bg-emerald-950/90 px-2.5 py-1 text-[11px] font-medium text-emerald-200 shadow-xl backdrop-blur-md transition hover:bg-emerald-900 active:scale-95"
+        className="fixed bottom-[72px] sm:bottom-4 left-2.5 sm:left-4 z-30 flex items-center gap-1.5 rounded-full border border-emerald-700/40 bg-emerald-950/85 px-2.5 py-1 text-[10.5px] font-medium text-emerald-200 shadow-lg backdrop-blur-md transition hover:bg-emerald-900 active:scale-95"
         onClick={() => setIsMinimized(false)}
         title="Open Role Switcher"
       >
-        <Sparkles size={12} className="text-amber-300" />
+        <Sparkles size={11} className="text-amber-300" />
         <span><b>{currentRole.toUpperCase()}</b></span>
       </button>
     );
   }
 
   return (
-    <div className="fixed bottom-20 sm:bottom-4 left-3 sm:left-4 z-40 max-w-[calc(100vw-24px)] flex flex-col gap-1 rounded-2xl border border-emerald-800/30 bg-slate-950/95 p-2.5 text-xs text-slate-200 shadow-2xl backdrop-blur-md">
+    <div className="fixed bottom-[72px] sm:bottom-4 left-2.5 sm:left-4 z-40 max-w-[calc(100vw-20px)] flex flex-col gap-1 rounded-2xl border border-emerald-800/30 bg-slate-950/95 p-2.5 text-xs text-slate-200 shadow-2xl backdrop-blur-md">
       <div className="flex items-center justify-between gap-3 px-1 pb-1 border-b border-white/10">
         <div className="flex items-center gap-1.5 font-semibold text-emerald-400">
           <Sparkles size={13} className="text-amber-400" />
