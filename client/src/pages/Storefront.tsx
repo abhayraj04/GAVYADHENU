@@ -403,16 +403,13 @@ export default function Storefront() {
         <div className="anv-announcement-inner">
           <div className="anv-ticker-items">
             <span className="anv-ticker-item">
-              <Truck size={13} /> Free Express Delivery on orders above ₹999 across India
+              <Truck size={13} /> Free Express Delivery on orders above ₹999 across India · Code <b className="highlight">PURE150</b>
             </span>
-            <span className="anv-ticker-item">
+            <span className="anv-ticker-item anv-hide-mobile">
               <ShieldCheck size={13} /> 100% Traditional Bilona Churned & Cold Wood-Pressed
             </span>
-            <span className="anv-ticker-item">
-              <Percent size={13} /> Use Code <b className="highlight">PURE150</b> for Flat ₹150 OFF above ₹1499
-            </span>
           </div>
-          <div className="anv-announcement-right">
+          <div className="anv-announcement-right anv-hide-mobile">
             <button
               onClick={() => document.getElementById("lab-reports")?.scrollIntoView({ behavior: "smooth" })}
             >
